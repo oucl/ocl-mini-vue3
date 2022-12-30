@@ -1,12 +1,12 @@
 import { reactive } from "../reactive";
 import { effect, stop } from "../effect";
-describe('effect',()=>{
+describe('effect', () => {
     // 验证响应数据的变化 触发 影响effect 
-    it('happy path', () => { 
-        const user = reactive({age:10})
+    it('happy path', () => {
+        const user = reactive({ age: 10 })
         let nextAge;
-        effect(()=>{
-            nextAge = user.age+1
+        effect(() => {
+            nextAge = user.age + 1
         })
         expect(nextAge).toBe(11)
         // update
@@ -16,7 +16,7 @@ describe('effect',()=>{
 
     it('runner', () => {
         let foo = 10
-       const runner = effect(()=>{
+        const runner = effect(() => {
             foo++
             return 'foo'
         })
@@ -33,11 +33,11 @@ describe('effect',()=>{
         // 4、如果说当执行runner的时候，会再次执行fn
         let dummy
         let run
-        const scheduler = jest.fn(()=>{
+        const scheduler = jest.fn(() => {
             run = runner
         })
-        const obj = reactive({foo:1})
-        const runner = effect(()=>{
+        const obj = reactive({ foo: 1 })
+        const runner = effect(() => {
             dummy = obj.foo
         }, { scheduler })
         expect(scheduler).not.toHaveBeenCalled()
@@ -53,27 +53,27 @@ describe('effect',()=>{
 
     it('stop', () => {
         let dummy
-        const obj = reactive({foo:1})
-        const runner = effect(()=>{
+        const obj = reactive({ foo: 1 })
+        const runner = effect(() => {
             dummy = obj.foo
         })
         expect(dummy).toBe(1)
-        obj.foo = 2 // 2
+        obj.foo++// 2
         expect(dummy).toBe(2)
         stop(runner)
-        obj.foo = 3 // 3
+        obj.foo++ // 3
         expect(dummy).toBe(2)
         runner() // 
         expect(dummy).toBe(3)
     });
 
     it('onStop', () => {
-        const obj = reactive({foo: 1})
-        const onStop = jest.fn(()=>{})
+        const obj = reactive({ foo: 1 })
+        const onStop = jest.fn(() => { })
         let dummy
-        const runner = effect(()=>{
+        const runner = effect(() => {
             dummy = obj.foo
-        }, {onStop})
+        }, { onStop })
         stop(runner)
         expect(onStop).toBeCalledTimes(1)
     });
